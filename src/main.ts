@@ -1,11 +1,12 @@
 import { el } from '@zero-dependency/dom'
-import { createRouter } from 'navigation-router'
+import { createRouter, NavigationAdapter } from 'navigation-router'
 import { AboutRoute } from './routes/about'
 import { BlogRoute } from './routes/blog'
 import { HomeRoute } from './routes/home'
 import './style.css'
 
 const router = createRouter({
+  adapter: new NavigationAdapter(import.meta.env.BASE_URL),
   routes: [
     HomeRoute,
     AboutRoute,
@@ -13,11 +14,8 @@ const router = createRouter({
   ],
   renderRoot: () => document.querySelector('#app'),
   navigationRoot: () => document.querySelector('#navigation'),
-  navigationRenderLink: (route) => {
-    const link = el('a', {
-      href: route.props.path,
-      className: 'link',
-    })
+  navigationRenderLink: () => {
+    const link = el('a', { className: 'link' })
     return link
   },
 })

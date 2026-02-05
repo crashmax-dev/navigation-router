@@ -1,4 +1,5 @@
 import { convertPathToURLPattern } from './utils'
+import type { RouterAdapter } from './adapters/router-adapter'
 import type {
   RouteComponent,
   RouteConstructor,
@@ -6,6 +7,7 @@ import type {
 } from './route-component'
 
 export interface RouterConfig {
+  adapter: RouterAdapter
   routes: RouteConstructor[]
   renderRoot: () => HTMLElement | null
   navigationRoot: () => HTMLElement | null
@@ -14,6 +16,7 @@ export interface RouterConfig {
 
 export class Router {
   private config: RouterConfig
+  private adapter: RouterAdapter
 
   private routes: Map<string, RouteComponent> = new Map()
   private routesByName: Map<string, RouteComponent> = new Map()
@@ -22,17 +25,11 @@ export class Router {
   private currentRoute: RouteComponent
   private currentElement: HTMLElement
 
-  private navigation: Navigation
   private navigationLinks: Map<string, HTMLElement> = new Map()
 
   constructor(config: RouterConfig) {
     this.config = config
-
-    if (typeof window.navigation === 'undefined') {
-      throw new TypeError('Navigation API is not available')
-    }
-
-    this.navigation = window.navigation
+    this.adapter = config.adapter
     this.init()
   }
 
@@ -52,19 +49,13 @@ export class Router {
 
     this.renderNavigation()
 
-    this.navigation.addEventListener('navigate', (event) => {
-      if (!event.canIntercept || event.hashChange || event.downloadRequest) {
-        return
-      }
-
-      event.intercept({
-        handler: async () => {
-          await this.handleNavigation(event.destination.url)
-        },
-      })
+    // Подписка на изменения URL через адаптер
+    this.adapter.listen((path) => {
+      this.handleNavigation(path)
     })
 
-    this.handleNavigation(window.location.href)
+    // Инициализация текущего маршрута
+    this.handleNavigation(this.adapter.getLocation())
   }
 
   private renderNavigation() {
@@ -87,7 +78,18 @@ export class Router {
         : linkElement.querySelector('a')
 
       if (anchor) {
+        anchor.href = this.adapter.createHref(route.props.path)
         anchor.textContent = route.props.label || route.props.name || route.props.path
+
+        anchor.addEventListener('click', (event) => {
+          if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+            return
+          }
+
+          event.preventDefault()
+          this.push(route.props.path)
+        })
+
         // TODO: implement prefetch
         // anchor.addEventListener('mouseenter', () => {
         //   this.prefetch(route.props.path);
@@ -99,22 +101,22 @@ export class Router {
     }
   }
 
-  private async handleNavigation(url: string) {
+  private async handleNavigation(path: string) {
     const renderRoot = this.config.renderRoot()
     if (!renderRoot) {
       console.warn('[handleNavigation] Root container not found')
       return
     }
 
-    const parsedUrl = new URL(url)
-    const matchResult = this.findRoute(parsedUrl)
+    const url = new URL(path, location.origin)
+    const matchResult = this.findRoute(url)
     if (!matchResult) {
-      console.warn('[handleNavigation] Route not found:', parsedUrl)
+      console.warn('[handleNavigation] Route not found:', url)
       return
     }
 
     const ctx: RouteCtx = {
-      query: Object.fromEntries(parsedUrl.searchParams),
+      query: Object.fromEntries(url.searchParams),
       params: matchResult.params,
       router: this,
     }
@@ -130,8 +132,11 @@ export class Router {
     }
 
     if (this.currentElement) {
-      this.currentRoute.el = undefined
       renderRoot.removeChild(this.currentElement)
+    }
+
+    if (this.currentRoute) {
+      this.currentRoute.el = undefined
     }
 
     renderRoot.appendChild(element)
@@ -153,7 +158,7 @@ export class Router {
 
   private findRoute(url: URL) {
     for (const [pattern, route] of this.urlPatterns.entries()) {
-      const result = pattern.exec(url.href)
+      const result = pattern.exec({ pathname: url.pathname })
       if (!result) continue
 
       return {
@@ -169,19 +174,19 @@ export class Router {
   // }
 
   push(path: string) {
-    this.navigation.navigate(path)
+    this.adapter.navigate(path)
   }
 
   replace(path: string) {
-    this.navigation.navigate(path, { history: 'replace' })
+    this.adapter.navigate(path, true)
   }
 
   back() {
-    this.navigation.back()
+    this.adapter.go(-1)
   }
 
   forward() {
-    this.navigation.forward()
+    this.adapter.go(1)
   }
 
   getUnsafe<T extends RouteConstructor>(

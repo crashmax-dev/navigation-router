@@ -1,2 +1,6 @@
+export { HashAdapter } from './adapters/hash-adapter'
+export { MemoryAdapter } from './adapters/memory-adapter'
+export { NavigationAdapter } from './adapters/navigation-adapter'
+export type { RouterAdapter } from './adapters/router-adapter'
 export { createRouter } from './create-router'
 export { RouteComponent, type RouteCtx } from './route-component'
