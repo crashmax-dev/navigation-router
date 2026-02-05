@@ -1,8 +1,9 @@
+import { el } from '@zero-dependency/dom'
 import { RouteComponent } from 'navigation-router'
 import type { RouteCtx } from 'navigation-router'
 
 export class HomeRoute extends RouteComponent {
-  private div: HTMLDivElement | null = null
+  cursorPointer: HTMLElement
 
   constructor() {
     super({
@@ -11,33 +12,45 @@ export class HomeRoute extends RouteComponent {
     })
 
     this.handleClick = this.handleClick.bind(this)
-  }
-
-  render(ctx: RouteCtx<{ Query: { id: string } }>) {
-    const div = document.createElement('div')
-    div.innerHTML = `
-      <h1>Home Page</h1>
-      <p>Welcome!</p>
-    `
-    div.addEventListener('click', this.handleClick)
-
-    const button = document.createElement('button')
-    button.textContent = 'Go to About'
-    button.addEventListener('click', () => {
-      ctx.router.push('/about')
-    })
-
-    div.appendChild(button)
-    this.div = div
-    return div
+    this.handleMove = this.handleMove.bind(this)
   }
 
   handleClick() {
-    console.log('Home clicked')
+    console.info('Home clicked!')
+  }
+
+  handleMove(event: MouseEvent) {
+    this.cursorPointer.textContent = `x: ${event.clientX} y: ${event.clientY}`
+    console.log('Mouse moved! 🎉')
+  }
+
+  mount(ctx: RouteCtx) {
+    this.cursorPointer = el('pre', 'x: 0 y: 0')
+    this.el = el('div', [
+      el('h1', 'Home Page'),
+      el('p', 'Welcome back!'),
+      this.cursorPointer,
+      el('div', [
+        el('button', {
+          onclick: this.handleClick,
+        }, 'Click me!'),
+        el('button', {
+          onclick() {
+            ctx.router.push('/about')
+          },
+        }, 'Go to About'),
+        el('button', {
+          onclick() {
+            ctx.router.push('/blog/1')
+          },
+        }, 'Go to Blog'),
+      ]),
+    ])
+
+    document.body.addEventListener('mousemove', this.handleMove)
   }
 
   unmount() {
-    if (!this.div) return
-    this.div.removeEventListener('click', this.handleClick)
+    document.body.removeEventListener('mousemove', this.handleMove)
   }
 }

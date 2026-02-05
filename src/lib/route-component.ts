@@ -13,13 +13,14 @@ export interface RouteCtx<T = unknown> {
 }
 
 export abstract class RouteComponent<T = unknown> {
+  el?: HTMLElement
   props: RouteComponentProps
 
   constructor(props: RouteComponentProps) {
     this.props = props
   }
 
-  abstract render(ctx: RouteCtx<T>): HTMLElement
+  abstract mount(ctx: RouteCtx<T>): HTMLElement | void
 
   unmount?(): void
 }

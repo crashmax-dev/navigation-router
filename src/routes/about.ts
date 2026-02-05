@@ -1,3 +1,4 @@
+import { el } from '@zero-dependency/dom'
 import { RouteComponent } from 'navigation-router'
 import type { RouteCtx } from 'navigation-router'
 
@@ -9,17 +10,15 @@ export class AboutRoute extends RouteComponent {
     })
   }
 
-  render(ctx: RouteCtx) {
-    const div = document.createElement('div')
-    div.innerHTML = '<h1>About page</h1>'
-
-    const button = document.createElement('button')
-    button.textContent = 'Go to Blog'
-    button.addEventListener('click', () => {
-      ctx.router.push('/blog/1')
-    })
-
-    div.appendChild(button)
-    return div
+  mount(ctx: RouteCtx) {
+    return el('div', [
+      el('h1', 'About Page'),
+      el('p', 'This is the about page.'),
+      el('button', {
+        onclick() {
+          ctx.router.back()
+        },
+      }, 'Go back'),
+    ])
   }
 }

@@ -16,8 +16,8 @@ export class Router {
   private routes: Map<string, RouteComponent> = new Map()
   private routesByName: Map<string, RouteComponent> = new Map()
   private urlPatterns: Map<URLPattern, RouteComponent> = new Map()
-  private currentRoute: RouteComponent | null = null
-  private currentElement: HTMLElement | null = null
+  private currentRoute: RouteComponent
+  private currentElement: HTMLElement
   private config: RouterConfig
   private navigation: Navigation
 
@@ -65,7 +65,7 @@ export class Router {
   private renderNavigation() {
     const navigationRoot = this.config.navigationRoot()
     if (!navigationRoot) {
-      console.warn('Navigation container not found')
+      console.warn('[renderNavigation] Navigation container not found')
       return
     }
 
@@ -76,10 +76,13 @@ export class Router {
       if (route.props.path.includes(':')) continue
 
       const linkElement = this.config.navigationRenderLink(route)
-      const anchor = linkElement.querySelector('a')
+      const anchor = linkElement instanceof HTMLAnchorElement
+        ? linkElement
+        : linkElement.querySelector('a')
 
       if (anchor) {
         anchor.textContent = route.props.label || route.props.name || route.props.path
+        // TODO: implement prefetch
         // anchor.addEventListener('mouseenter', () => {
         //   this.prefetch(route.props.path);
         // });
@@ -92,19 +95,15 @@ export class Router {
   private async handleNavigation(url: string) {
     const renderRoot = this.config.renderRoot()
     if (!renderRoot) {
-      console.warn('Root container not found')
+      console.warn('[handleNavigation] Root container not found')
       return
     }
 
     const parsedUrl = new URL(url)
     const matchResult = this.findRoute(parsedUrl)
     if (!matchResult) {
-      console.warn(`Route not found: ${parsedUrl.pathname}`)
+      console.warn('[handleNavigation] Route not found:', parsedUrl)
       return
-    }
-
-    if (this.currentRoute?.unmount) {
-      this.currentRoute.unmount()
     }
 
     const query: Record<string, string> = {}
@@ -118,9 +117,18 @@ export class Router {
       router: this,
     }
 
-    const element = matchResult.route.render(ctx)
+    if (this.currentRoute?.unmount) {
+      this.currentRoute.unmount()
+    }
+
+    const element = matchResult.route.mount(ctx) ?? matchResult.route.el
+    if (!element) {
+      console.warn('[handleNavigation] Route element is not defined:', matchResult.route.props)
+      return
+    }
 
     if (this.currentElement) {
+      this.currentRoute.el = undefined
       renderRoot.removeChild(this.currentElement)
     }
 
@@ -150,6 +158,7 @@ export class Router {
     }
   }
 
+  // TODO: implement prefetch
   // private prefetch(path: string) {
   //   console.log(`Prefetching: ${path}`);
   // }
@@ -170,7 +179,7 @@ export class Router {
     this.navigation.forward()
   }
 
-  getUnsafe<T extends RouteConstructor>(filter: { name: string } | { path: string }): InstanceType<T> {
+  getUnsafe<T extends RouteConstructor>(filter: { name: string } | { path: string }): InstanceType<T> | undefined {
     let route: RouteComponent | undefined
 
     if ('name' in filter) {
@@ -180,7 +189,8 @@ export class Router {
     }
 
     if (!route) {
-      throw new Error(`Route not found: ${JSON.stringify(filter)}`)
+      console.warn('[getUnsafe] Route not found:', filter)
+      return
     }
 
     return route as InstanceType<T>

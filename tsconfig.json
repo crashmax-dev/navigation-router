@@ -24,6 +24,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
       "navigation-router": ["./src/lib/index.ts"],

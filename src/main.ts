@@ -1,9 +1,8 @@
+import { el } from '@zero-dependency/dom'
 import { createRouter } from 'navigation-router'
-
 import { AboutRoute } from './routes/about'
 import { BlogRoute } from './routes/blog'
 import { HomeRoute } from './routes/home'
-
 import './style.css'
 
 const router = createRouter({
@@ -14,13 +13,12 @@ const router = createRouter({
   ],
   renderRoot: () => document.querySelector('#app'),
   navigationRoot: () => document.querySelector('#navigation'),
-  navigationRenderLink: (route): HTMLElement => {
-    const div = document.createElement('div')
-    const a = document.createElement('a')
-    a.href = route.props.path
-    a.classList.add('link')
-    div.append(a)
-    return div
+  navigationRenderLink: (route) => {
+    const link = el('a', {
+      href: route.props.path,
+      className: 'link',
+    })
+    return link
   },
 })
 
