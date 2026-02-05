@@ -10,10 +10,11 @@ export class AboutRoute extends RouteComponent {
     })
   }
 
-  mount(ctx: RouteCtx) {
+  mount(ctx: RouteCtx<{ Query: { timestamp: string } }>) {
     return el('div', [
       el('h1', 'About Page'),
       el('p', 'This is the about page.'),
+      el('pre', `Timestamp: ${ctx.query.timestamp}`),
       el('button', {
         onclick() {
           ctx.router.back()

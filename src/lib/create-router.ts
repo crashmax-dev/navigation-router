@@ -13,13 +13,17 @@ export interface RouterConfig {
 }
 
 export class Router {
+  private config: RouterConfig
+
   private routes: Map<string, RouteComponent> = new Map()
   private routesByName: Map<string, RouteComponent> = new Map()
   private urlPatterns: Map<URLPattern, RouteComponent> = new Map()
+
   private currentRoute: RouteComponent
   private currentElement: HTMLElement
-  private config: RouterConfig
+
   private navigation: Navigation
+  private navigationLinks: Map<string, HTMLElement> = new Map()
 
   constructor(config: RouterConfig) {
     this.config = config
@@ -29,25 +33,26 @@ export class Router {
     }
 
     this.navigation = window.navigation
+    this.init()
   }
 
-  init() {
-    this.config.routes.forEach((RouteClass) => {
-      const route = new RouteClass()
-      this.routes.set(route.props.path, route)
+  private init() {
+    for (const RouteClass of this.config.routes) {
+      const routeInstance = new RouteClass()
+      this.routes.set(routeInstance.props.path, routeInstance)
 
-      if (route.props.name) {
-        this.routesByName.set(route.props.name, route)
+      if (routeInstance.props.name) {
+        this.routesByName.set(routeInstance.props.name, routeInstance)
       }
 
-      const patternPath = convertPathToURLPattern(route.props.path)
+      const patternPath = convertPathToURLPattern(routeInstance.props.path)
       const pattern = new URLPattern({ pathname: patternPath })
-      this.urlPatterns.set(pattern, route)
-    })
+      this.urlPatterns.set(pattern, routeInstance)
+    }
 
     this.renderNavigation()
 
-    this.navigation.addEventListener('navigate', (event: NavigateEvent) => {
+    this.navigation.addEventListener('navigate', (event) => {
       if (!event.canIntercept || event.hashChange || event.downloadRequest) {
         return
       }
@@ -71,6 +76,7 @@ export class Router {
 
     navigationRoot.innerHTML = ''
 
+    this.navigationLinks.clear()
     for (const route of this.routes.values()) {
       // skip dynamic routes
       if (route.props.path.includes(':')) continue
@@ -88,6 +94,7 @@ export class Router {
         // });
       }
 
+      this.navigationLinks.set(route.props.path, anchor || linkElement)
       navigationRoot.appendChild(linkElement)
     }
   }
@@ -106,13 +113,8 @@ export class Router {
       return
     }
 
-    const query: Record<string, string> = {}
-    parsedUrl.searchParams.forEach((value, key) => {
-      query[key] = value
-    })
-
     const ctx: RouteCtx = {
-      query,
+      query: Object.fromEntries(parsedUrl.searchParams),
       params: matchResult.params,
       router: this,
     }
@@ -136,24 +138,27 @@ export class Router {
 
     this.currentRoute = matchResult.route
     this.currentElement = element
+    this.updateActiveLink()
   }
 
-  private findRoute(url: URL): { route: RouteComponent, params: Record<string, string> } | undefined {
+  private updateActiveLink() {
+    this.navigationLinks.forEach((element, path) => {
+      if (path === this.currentRoute?.props.path) {
+        element.classList.add('active')
+      } else {
+        element.classList.remove('active')
+      }
+    })
+  }
+
+  private findRoute(url: URL) {
     for (const [pattern, route] of this.urlPatterns.entries()) {
       const result = pattern.exec(url.href)
+      if (!result) continue
 
-      if (result) {
-        const params: Record<string, string> = {}
-
-        if (result.pathname.groups) {
-          Object.entries(result.pathname.groups).forEach(([key, value]) => {
-            if (value) {
-              params[key] = value
-            }
-          })
-        }
-
-        return { route, params }
+      return {
+        route,
+        params: result.pathname.groups,
       }
     }
   }
@@ -179,7 +184,9 @@ export class Router {
     this.navigation.forward()
   }
 
-  getUnsafe<T extends RouteConstructor>(filter: { name: string } | { path: string }): InstanceType<T> | undefined {
+  getUnsafe<T extends RouteConstructor>(
+    filter: { name: string } | { path: string },
+  ): InstanceType<T> | undefined {
     let route: RouteComponent | undefined
 
     if ('name' in filter) {

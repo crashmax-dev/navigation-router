@@ -11,18 +11,27 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #647eff;
+  --secondary-color: #42d392;
+  --title-background: linear-gradient(300deg, var(--secondary-color) 25%, var(--primary-color));
 }
 
 body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+}
+
+#app {
+  padding: 2rem;
+  flex: 1;
 }
 
 #navigation {
   display: flex;
-  justify-content: center;
   gap: 1rem;
   padding: 1.5rem;
   background-color: #1a1a1a;
@@ -43,24 +52,21 @@ body {
   background-color: transparent;
 }
 
-#navigation .link:hover {
+#navigation .link:hover,
+#navigation .link.active {
   background-color: #333;
   color: #fff;
 }
 
-#app {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 2rem;
-  flex: 1;
+#navigation .link.active {
+  background-color: var(--primary-color);
 }
 
 h1 {
   font-size: 2.5em;
   line-height: 1.1;
   margin-bottom: 1rem;
-  background: -webkit-linear-gradient(315deg, #42d392 25%, #647eff);
+  background: var(--title-background);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -81,11 +87,11 @@ button {
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: var(--primary-color);
   background-color: #2a2a2a;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 4px auto var(--primary-color);
 }

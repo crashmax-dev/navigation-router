@@ -36,7 +36,7 @@ export class HomeRoute extends RouteComponent {
         }, 'Click me!'),
         el('button', {
           onclick() {
-            ctx.router.push('/about')
+            ctx.router.push(`/about?timestamp=${Date.now()}`)
           },
         }, 'Go to About'),
         el('button', {

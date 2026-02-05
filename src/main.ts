@@ -22,7 +22,5 @@ const router = createRouter({
   },
 })
 
-router.init()
-
 // @ts-ignore
 window.$router = router
