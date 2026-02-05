@@ -22,5 +22,7 @@ const router = createRouter({
   },
 })
 
-// @ts-ignore
+console.log(router)
+
+// @ts-ignore debug
 window.$router = router
