@@ -18,28 +18,30 @@ export class NavigationAdapter implements RouterAdapter {
   }
 
   listen(callback: (path: string) => void) {
-    const handler = (event: NavigateEvent) => {
-      if (!event.canIntercept || event.hashChange || event.downloadRequest) {
-        return
-      }
-
-      event.intercept({
-        handler: async () => {
-          const url = new URL(event.destination.url)
-          const path = url.pathname.startsWith(this.base)
-            ? url.pathname.slice(this.base.length)
-            : url.pathname
-
-          callback((path || '/') + url.search + url.hash)
-        },
-      })
-    }
-
     const navigation = window.navigation
     if (navigation) {
+      const handler = (event: NavigateEvent) => {
+        if (!event.canIntercept || event.hashChange || event.downloadRequest) {
+          return
+        }
+
+        event.intercept({
+          handler: async () => {
+            const url = new URL(event.destination.url)
+            const path = url.pathname.startsWith(this.base)
+              ? url.pathname.slice(this.base.length)
+              : url.pathname
+
+            callback((path || '/') + url.search + url.hash)
+          },
+        })
+      }
+
       navigation.addEventListener('navigate', handler)
       return () => navigation.removeEventListener('navigate', handler)
     }
+
+    // fallback for older browsers
     const popstateHandler = () => callback(this.getLocation())
     window.addEventListener('popstate', popstateHandler)
     return () => window.removeEventListener('popstate', popstateHandler)

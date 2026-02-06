@@ -49,12 +49,10 @@ export class Router {
 
     this.renderNavigation()
 
-    // Подписка на изменения URL через адаптер
     this.adapter.listen((path) => {
       this.handleNavigation(path)
     })
 
-    // Инициализация текущего маршрута
     this.handleNavigation(this.adapter.getLocation())
   }
 
