@@ -1,5 +1,9 @@
 import { el } from '@zero-dependency/dom'
-import { createRouter, NavigationAdapter } from 'navigation-router'
+import {
+  createRouter,
+  HashAdapter,
+  NavigationAdapter,
+} from 'navigation-router'
 import { AboutRoute } from './routes/about'
 import { BlogRoute } from './routes/blog'
 import { HomeRoute } from './routes/home'
@@ -7,7 +11,9 @@ import { PostsRoute } from './routes/posts'
 import './style.css'
 
 const router = createRouter({
-  adapter: new NavigationAdapter(import.meta.env.BASE_URL),
+  adapter: import.meta.env.DEV
+    ? new NavigationAdapter(import.meta.env.BASE_URL)
+    : new HashAdapter(),
   routes: [
     HomeRoute,
     AboutRoute,
