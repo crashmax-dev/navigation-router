@@ -34,9 +34,7 @@ export class HomeRoute extends RouteComponent {
       el('h1', 'Home Page'),
       el('p', 'Welcome back!'),
       this.cursorPointer,
-      el(
-        'div',
-        { className: 'buttons' },
+      el('div', { className: 'buttons' }, [
         el('button', {
           onclick: this.handleClick,
         }, 'Click me!'),
@@ -50,7 +48,7 @@ export class HomeRoute extends RouteComponent {
             ctx.router.push('/blog/1')
           },
         }, 'Go to Blog'),
-      ),
+      ]),
     ])
   }
 

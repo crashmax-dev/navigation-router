@@ -31,11 +31,16 @@ export class PostsRoute extends RouteComponent {
     const page = this.page()
     const loading = this.loading()
 
+    const rows = posts.map((post) => el('tr', [
+      el('td', String(post.id)),
+      el('td', String(post.userId)),
+      el('td', post.title),
+      el('td', post.body),
+    ]))
+
     return el('div', [
       el('h1', 'Posts'),
-      el(
-        'div',
-        { className: 'buttons' },
+      el('div', { className: 'buttons' }, [
         el('button', {
           disabled: page === 1,
           onclick: () => {
@@ -68,10 +73,8 @@ export class PostsRoute extends RouteComponent {
             ])
           },
         }, 'Add Post'),
-      ),
-      el(
-        'table',
-        { className: 'posts-table' },
+      ]),
+      el('table', { className: 'posts-table' }, [
         el('thead', [
           el('tr', [
             el('th', 'ID'),
@@ -80,14 +83,8 @@ export class PostsRoute extends RouteComponent {
             el('th', 'Body'),
           ]),
         ]),
-        el('tbody', posts.map((post) => el('tr', [
-          el('td', String(post.id)),
-          el('td', String(post.userId)),
-          el('td', post.title),
-          el('td', post.body),
-        ]),
-        )),
-      ),
+        el('tbody', rows),
+      ]),
     ])
   }
 

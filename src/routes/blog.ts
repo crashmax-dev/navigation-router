@@ -15,9 +15,7 @@ export class BlogRoute extends RouteComponent {
     return el('div', [
       el('h1', 'Blog Page'),
       el('p', `Blog ID: ${blogId}`),
-      el(
-        'div',
-        { className: 'buttons' },
+      el('div', { className: 'buttons' }, [
         el('button', {
           onclick() {
             ctx.router.back()
@@ -28,7 +26,7 @@ export class BlogRoute extends RouteComponent {
             ctx.router.push(`/blog/${Number(blogId) + 1}`)
           },
         }, 'Go to next blog'),
-      ),
+      ]),
     ])
   }
 }
