@@ -10,7 +10,7 @@ export class AboutRoute extends RouteComponent {
     })
   }
 
-  mount(ctx: RouteCtx<{ Query: { timestamp: string } }>) {
+  render(ctx: RouteCtx<{ Query: { timestamp: string } }>) {
     return el('div', [
       el('h1', 'About Page'),
       el('p', 'This is the about page.'),

@@ -20,9 +20,15 @@ export abstract class RouteComponent<T = unknown> {
     this.props = props
   }
 
-  abstract mount(ctx: RouteCtx<T>): HTMLElement | void
+  setup?(ctx: RouteCtx<T>): Promise<void> | void
+
+  abstract render(ctx: RouteCtx<T>): HTMLElement | void
 
   unmount?(): void
+
+  onLinkMouseEnter?(event: MouseEvent): void
+
+  onLinkMouseLeave?(event: MouseEvent): void
 }
 
 export type RouteConstructor<T = unknown> = new () => RouteComponent<T>

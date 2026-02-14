@@ -3,6 +3,7 @@ import { createRouter, NavigationAdapter } from 'navigation-router'
 import { AboutRoute } from './routes/about'
 import { BlogRoute } from './routes/blog'
 import { HomeRoute } from './routes/home'
+import { PostsRoute } from './routes/posts'
 import './style.css'
 
 const router = createRouter({
@@ -11,6 +12,7 @@ const router = createRouter({
     HomeRoute,
     AboutRoute,
     BlogRoute,
+    PostsRoute,
   ],
   renderRoot: () => document.querySelector('#app'),
   navigationRoot: () => document.querySelector('#navigation'),

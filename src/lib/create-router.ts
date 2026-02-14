@@ -1,3 +1,4 @@
+import { effect } from 'alien-signals'
 import { convertPathToURLPattern } from './utils'
 import type { RouterAdapter } from './adapters/router-adapter'
 import type {
@@ -22,8 +23,8 @@ export class Router {
   private routesByName: Map<string, RouteComponent> = new Map()
   private urlPatterns: Map<URLPattern, RouteComponent> = new Map()
 
-  private currentRoute: RouteComponent
-  private currentElement: HTMLElement
+  private currentRoute: RouteComponent | null = null
+  private currentRouteDisposers: (() => void)[] = []
 
   private navigationLinks: Map<string, HTMLElement> = new Map()
 
@@ -88,10 +89,17 @@ export class Router {
           this.push(route.props.path)
         })
 
-        // TODO: implement prefetch
-        // anchor.addEventListener('mouseenter', () => {
-        //   this.prefetch(route.props.path);
-        // });
+        if (route.onLinkMouseEnter) {
+          anchor.addEventListener('mouseenter', (event) => {
+            route.onLinkMouseEnter!(event)
+          })
+        }
+
+        if (route.onLinkMouseLeave) {
+          anchor.addEventListener('mouseleave', (event) => {
+            route.onLinkMouseLeave!(event)
+          })
+        }
       }
 
       this.navigationLinks.set(route.props.path, anchor || linkElement)
@@ -123,35 +131,33 @@ export class Router {
       this.currentRoute.unmount()
     }
 
-    const element = matchResult.route.mount(ctx) ?? matchResult.route.el
-    if (!element) {
-      console.warn('[handleNavigation] Route element is not defined:', matchResult.route.props)
-      return
+    this.currentRouteDisposers.forEach((dispose) => dispose())
+    this.currentRouteDisposers = []
+
+    if (matchResult.route.setup) {
+      await matchResult.route.setup(ctx)
     }
 
-    if (this.currentElement) {
-      renderRoot.removeChild(this.currentElement)
-    }
-
-    if (this.currentRoute) {
-      this.currentRoute.el = undefined
-    }
-
-    renderRoot.appendChild(element)
+    this.currentRouteDisposers.push(
+      effect(async () => {
+        const content = matchResult.route.render(ctx) ?? matchResult.route.el
+        if (!content) return
+        renderRoot.replaceChildren(content)
+      }),
+    )
 
     this.currentRoute = matchResult.route
-    this.currentElement = element
     this.updateActiveLink()
   }
 
   private updateActiveLink() {
-    this.navigationLinks.forEach((element, path) => {
+    for (const [path, element] of this.navigationLinks.entries()) {
       if (path === this.currentRoute?.props.path) {
         element.classList.add('active')
       } else {
         element.classList.remove('active')
       }
-    })
+    }
   }
 
   private findRoute(url: URL) {

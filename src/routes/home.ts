@@ -24,30 +24,34 @@ export class HomeRoute extends RouteComponent {
     console.log('Mouse moved! 🎉')
   }
 
-  mount(ctx: RouteCtx) {
+  setup() {
     this.cursorPointer = el('pre', 'x: 0 y: 0')
-    this.el = el('div', [
+    document.body.addEventListener('mousemove', this.handleMove)
+  }
+
+  render(ctx: RouteCtx) {
+    return el('div', [
       el('h1', 'Home Page'),
       el('p', 'Welcome back!'),
       this.cursorPointer,
-      el('div', [
+      el(
+        'div',
+        { className: 'buttons' },
         el('button', {
           onclick: this.handleClick,
         }, 'Click me!'),
         el('button', {
-          onclick() {
+          onclick: () => {
             ctx.router.push(`/about?timestamp=${Date.now()}`)
           },
         }, 'Go to About'),
         el('button', {
-          onclick() {
+          onclick: () => {
             ctx.router.push('/blog/1')
           },
         }, 'Go to Blog'),
-      ]),
+      ),
     ])
-
-    document.body.addEventListener('mousemove', this.handleMove)
   }
 
   unmount() {

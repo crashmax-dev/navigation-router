@@ -9,22 +9,26 @@ export class BlogRoute extends RouteComponent {
     })
   }
 
-  mount(ctx: RouteCtx<{ Params: { id: string } }>) {
+  render(ctx: RouteCtx<{ Params: { id: string } }>) {
     const blogId = ctx.params.id
 
-    this.el = el('div', [
+    return el('div', [
       el('h1', 'Blog Page'),
       el('p', `Blog ID: ${blogId}`),
-      el('button', {
-        onclick() {
-          ctx.router.back()
-        },
-      }, 'Go back'),
-      el('button', {
-        onclick() {
-          ctx.router.push(`/blog/${Number(blogId) + 1}`)
-        },
-      }, 'Go to next blog'),
+      el(
+        'div',
+        { className: 'buttons' },
+        el('button', {
+          onclick() {
+            ctx.router.back()
+          },
+        }, 'Go back'),
+        el('button', {
+          onclick() {
+            ctx.router.push(`/blog/${Number(blogId) + 1}`)
+          },
+        }, 'Go to next blog'),
+      ),
     ])
   }
 }
