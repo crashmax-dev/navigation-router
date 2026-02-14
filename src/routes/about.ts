@@ -14,7 +14,9 @@ export class AboutRoute extends RouteComponent {
     return el('div', [
       el('h1', 'About Page'),
       el('p', 'This is the about page.'),
-      el('pre', `Timestamp: ${ctx.query.timestamp}`),
+      ctx.query.timestamp
+        ? el('p', `Timestamp: ${ctx.query.timestamp}`)
+        : '',
       el('button', {
         onclick() {
           ctx.router.back()

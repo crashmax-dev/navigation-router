@@ -88,9 +88,15 @@ export class PostsRoute extends RouteComponent {
     ])
   }
 
-  async fetchPosts() {
-    if (this.loading()) return
+  abortRequestPosts() {
+    if (this.abortController) {
+      this.abortController.abort()
+      this.abortController = undefined
+    }
+  }
 
+  async fetchPosts() {
+    this.abortRequestPosts()
     this.abortController = new AbortController()
     this.loading(true)
 
@@ -103,19 +109,20 @@ export class PostsRoute extends RouteComponent {
         this.posts(await req.json())
         this.abortController = undefined
       }
-    } finally {
+
       this.loading(false)
-    }
+    } catch {}
   }
 
   onLinkMouseEnter() {
-    this.fetchPosts()
+    console.log('Mouse enter!')
+  }
+
+  onLinkMouseLeave() {
+    console.log('Mouse leave!')
   }
 
   unmount() {
-    if (this.abortController) {
-      this.abortController.abort()
-      this.abortController = undefined
-    }
+    this.abortRequestPosts()
   }
 }
