@@ -88,6 +88,10 @@ export class PostsRoute extends RouteComponent {
     ])
   }
 
+  unmount() {
+    this.abortRequestPosts()
+  }
+
   abortRequestPosts() {
     if (this.abortController) {
       this.abortController.abort()
@@ -120,9 +124,5 @@ export class PostsRoute extends RouteComponent {
 
   onLinkMouseLeave() {
     console.log('Mouse leave!')
-  }
-
-  unmount() {
-    this.abortRequestPosts()
   }
 }

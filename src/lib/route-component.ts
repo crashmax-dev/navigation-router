@@ -3,7 +3,6 @@ import type { Router } from './create-router'
 export interface RouteComponentProps {
   path: string
   label?: string
-  name?: string
 }
 
 export interface RouteCtx<T = unknown> {

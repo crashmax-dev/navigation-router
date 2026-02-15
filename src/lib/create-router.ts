@@ -20,7 +20,6 @@ export class Router {
   private adapter: RouterAdapter
 
   private routes: Map<string, RouteComponent> = new Map()
-  private routesByName: Map<string, RouteComponent> = new Map()
   private urlPatterns: Map<URLPattern, RouteComponent> = new Map()
 
   private currentRoute: RouteComponent | null = null
@@ -38,11 +37,6 @@ export class Router {
     for (const RouteClass of this.config.routes) {
       const routeInstance = new RouteClass()
       this.routes.set(routeInstance.props.path, routeInstance)
-
-      if (routeInstance.props.name) {
-        this.routesByName.set(routeInstance.props.name, routeInstance)
-      }
-
       const patternPath = convertPathToURLPattern(routeInstance.props.path)
       const pattern = new URLPattern({ pathname: patternPath })
       this.urlPatterns.set(pattern, routeInstance)
@@ -78,7 +72,7 @@ export class Router {
 
       if (anchor) {
         anchor.href = this.adapter.createHref(route.props.path)
-        anchor.textContent = route.props.label || route.props.name || route.props.path
+        anchor.textContent = route.props.label || route.props.path
 
         anchor.addEventListener('click', (event) => {
           if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
@@ -172,11 +166,6 @@ export class Router {
     }
   }
 
-  // TODO: implement prefetch
-  // private prefetch(path: string) {
-  //   console.log(`Prefetching: ${path}`);
-  // }
-
   push(path: string) {
     this.adapter.navigate(path)
   }
@@ -194,15 +183,9 @@ export class Router {
   }
 
   getUnsafe<T extends RouteConstructor>(
-    filter: { name: string } | { path: string },
+    filter: { path: string },
   ): InstanceType<T> | undefined {
-    let route: RouteComponent | undefined
-
-    if ('name' in filter) {
-      route = this.routesByName.get(filter.name)
-    } else {
-      route = this.routes.get(filter.path)
-    }
+    const route = this.routes.get(filter.path)
 
     if (!route) {
       console.warn('[getUnsafe] Route not found:', filter)

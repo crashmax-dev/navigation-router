@@ -15,15 +15,6 @@ export class HomeRoute extends RouteComponent {
     this.handleMove = this.handleMove.bind(this)
   }
 
-  handleClick() {
-    console.info('Home clicked!')
-  }
-
-  handleMove(event: MouseEvent) {
-    this.cursorPointer.textContent = `x: ${event.clientX} y: ${event.clientY}`
-    console.log('Mouse moved! 🎉')
-  }
-
   setup() {
     this.cursorPointer = el('pre', 'x: 0 y: 0')
     document.body.addEventListener('mousemove', this.handleMove)
@@ -54,5 +45,14 @@ export class HomeRoute extends RouteComponent {
 
   unmount() {
     document.body.removeEventListener('mousemove', this.handleMove)
+  }
+
+  handleClick() {
+    console.info('Home clicked!')
+  }
+
+  handleMove(event: MouseEvent) {
+    this.cursorPointer.textContent = `x: ${event.clientX} y: ${event.clientY}`
+    console.log('Mouse moved! 🎉')
   }
 }
