@@ -11,7 +11,7 @@ export class AboutRoute extends RouteComponent {
   }
 
   render(ctx: RouteCtx<{ Query: { timestamp: string } }>) {
-    return el('div', [
+    return el('section', [
       el('h1', 'About Page'),
       el('p', 'This is the about page.'),
       ctx.query.timestamp

@@ -38,7 +38,7 @@ export class PostsRoute extends RouteComponent {
       el('td', post.body),
     ]))
 
-    return el('div', [
+    return el('section', [
       el('h1', 'Posts'),
       el('div', { className: 'buttons' }, [
         el('button', {

@@ -12,7 +12,7 @@ export class BlogRoute extends RouteComponent {
   render(ctx: RouteCtx<{ Params: { id: string } }>) {
     const blogId = ctx.params.id
 
-    return el('div', [
+    return el('section', [
       el('h1', 'Blog Page'),
       el('p', `Blog ID: ${blogId}`),
       el('div', { className: 'buttons' }, [

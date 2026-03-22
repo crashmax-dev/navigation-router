@@ -21,7 +21,7 @@ export class HomeRoute extends RouteComponent {
   }
 
   render(ctx: RouteCtx) {
-    return el('div', [
+    return el('section', [
       el('h1', 'Home Page'),
       el('p', 'Welcome back!'),
       this.cursorPointer,
