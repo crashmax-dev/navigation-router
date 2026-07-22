@@ -12,6 +12,7 @@ hero:
     - theme: alt
       text: Playground
       link: https://crashmax-dev.github.io/navigation-router/playground/
+      target: _blank
 
 features:
   - title: URLPattern matching

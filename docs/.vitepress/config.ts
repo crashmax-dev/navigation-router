@@ -8,8 +8,15 @@ export default defineConfig({
   base: isGitHubPages ? '/navigation-router/' : '/',
   themeConfig: {
     nav: [
-      { text: 'Guide', link: '/guide/getting-started' },
-      { text: 'Playground', link: 'https://crashmax-dev.github.io/navigation-router/playground/' },
+      {
+        text: 'Guide',
+        link: '/guide/getting-started'
+      },
+      {
+        text: 'Playground',
+        link: 'https://crashmax-dev.github.io/navigation-router/playground/',
+        target: '_blank',
+      },
       {
         text: 'GitHub',
         link: 'https://github.com/crashmax-dev/navigation-router',
