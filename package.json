@@ -40,7 +40,7 @@
   },
   "scripts": {
     "dev": "vite --config playground/vite.config.ts",
-    "build": "pnpm typecheck && pnpm build:lib && pnpm build:playground",
+    "build": "pnpm type-check && pnpm build:lib && pnpm build:playground",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json && node scripts/postbuild-lib.mjs",
     "build:playground": "vite build --config playground/vite.config.ts",
     "build:site": "bash scripts/build-site.sh",
@@ -53,7 +53,7 @@
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix --cache",
     "type-check": "tsc",
-    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build:lib"
+    "prepublishOnly": "pnpm type-check && pnpm test && pnpm build:lib"
   },
   "peerDependencies": {
     "navigation-api-types": ">=0.6.0"
