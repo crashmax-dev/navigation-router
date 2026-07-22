@@ -14,7 +14,7 @@ export class BlogRoute extends RouteComponent {
 
     return el('section', [
       el('h1', 'Blog Page'),
-      el('p', `Blog ID: ${blogId}`),
+      el('p', `Typed param id: ${blogId}`),
       el('div', { className: 'buttons' }, [
         el('button', {
           onclick() {

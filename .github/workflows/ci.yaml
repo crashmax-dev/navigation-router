@@ -1,19 +1,14 @@
-name: GitHub Pages
+name: CI
 
 on:
   push:
     branches:
       - master
-
-permissions:
-  id-token: write
-  contents: write
+  pull_request:
 
 jobs:
-  build-and-deploy:
+  check:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_PAGES: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -30,11 +25,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build library
+        run: pnpm build:lib
+
       - name: Build site
         run: pnpm build:site
-
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
-        with:
-          branch: gh-pages
-          folder: site
+        env:
+          GITHUB_PAGES: 'true'

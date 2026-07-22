@@ -1,5 +1,9 @@
 import type { RouterAdapter } from './router-adapter'
 
+/**
+ * Adapter that stores the route in `location.hash`.
+ * Useful for static hosting without server-side path fallbacks.
+ */
 export class HashAdapter implements RouterAdapter {
   getLocation() {
     const hash = window.location.hash.slice(1)

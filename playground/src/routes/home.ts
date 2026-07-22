@@ -3,7 +3,7 @@ import { RouteComponent } from 'navigation-router'
 import type { RouteCtx } from 'navigation-router'
 
 export class HomeRoute extends RouteComponent {
-  cursorPointer: HTMLElement
+  cursorPointer!: HTMLElement
 
   constructor() {
     super({
@@ -23,7 +23,7 @@ export class HomeRoute extends RouteComponent {
   render(ctx: RouteCtx) {
     return el('section', [
       el('h1', 'Home Page'),
-      el('p', 'Welcome back!'),
+      el('p', 'Welcome to the navigation-router playground.'),
       this.cursorPointer,
       el('div', { className: 'buttons' }, [
         el('button', {
@@ -39,6 +39,11 @@ export class HomeRoute extends RouteComponent {
             ctx.router.push('/blog/1')
           },
         }, 'Go to Blog'),
+        el('button', {
+          onclick: () => {
+            ctx.router.push('/missing-page')
+          },
+        }, 'Trigger 404'),
       ]),
     ])
   }
@@ -53,6 +58,5 @@ export class HomeRoute extends RouteComponent {
 
   handleMove(event: MouseEvent) {
     this.cursorPointer.textContent = `x: ${event.clientX} y: ${event.clientY}`
-    console.log('Mouse moved! 🎉')
   }
 }

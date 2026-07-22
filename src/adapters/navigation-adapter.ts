@@ -1,5 +1,10 @@
 import type { RouterAdapter } from './router-adapter'
 
+/**
+ * Adapter backed by the Navigation API, with a `popstate` fallback.
+ *
+ * @param base - Optional base path (e.g. `/my-app`) stripped from / prepended to locations.
+ */
 export class NavigationAdapter implements RouterAdapter {
   private base: string
 
@@ -41,7 +46,6 @@ export class NavigationAdapter implements RouterAdapter {
       return () => navigation.removeEventListener('navigate', handler)
     }
 
-    // fallback for older browsers
     const popstateHandler = () => callback(this.getLocation())
     window.addEventListener('popstate', popstateHandler)
     return () => window.removeEventListener('popstate', popstateHandler)

@@ -2,6 +2,12 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu({
   typescript: true,
+  markdown: false,
+  ignores: [
+    'docs/**',
+    'README.md',
+    'playground/dist/**',
+  ],
   rules: {
     // js
     'no-nested-ternary': 'error',

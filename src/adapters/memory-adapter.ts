@@ -1,5 +1,8 @@
 import type { RouterAdapter } from './router-adapter'
 
+/**
+ * In-memory history adapter. Ideal for tests and non-DOM environments.
+ */
 export class MemoryAdapter implements RouterAdapter {
   private history: string[] = ['/']
   private index: number = 0
@@ -10,7 +13,7 @@ export class MemoryAdapter implements RouterAdapter {
   }
 
   getLocation() {
-    return this.history[this.index]
+    return this.history[this.index]!
   }
 
   listen(callback: (path: string) => void) {

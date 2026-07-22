@@ -13,10 +13,10 @@ export class AboutRoute extends RouteComponent {
   render(ctx: RouteCtx<{ Query: { timestamp: string } }>) {
     return el('section', [
       el('h1', 'About Page'),
-      el('p', 'This is the about page.'),
+      el('p', 'Typed query example via RouteCtx<{ Query: { timestamp: string } }>.'),
       ctx.query.timestamp
         ? el('p', `Timestamp: ${ctx.query.timestamp}`)
-        : '',
+        : el('p', 'No timestamp query param.'),
       el('button', {
         onclick() {
           ctx.router.back()

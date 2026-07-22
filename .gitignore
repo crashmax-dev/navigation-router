@@ -10,7 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+docs/.vitepress/dist
+docs/.vitepress/cache
+site
 *.local
+coverage
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +27,4 @@ dist-ssr
 *.sln
 *.sw?
 .eslintcache
+.pnpm-store
